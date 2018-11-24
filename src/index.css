@@ -1,0 +1,18 @@
+body {
+    background:rgb(240, 239, 240);
+    color: rgb(58, 58, 58);
+}
+
+#header {
+    font-size: 40px;
+    color :rgb(30, 40, 97);
+}
+.slogan {
+   font-size: 18px;
+   color: cadetblue 
+}
+#footer {
+    margin-top: 20px;
+    background:rgb(226, 226, 226);
+    color : #fff;
+}
