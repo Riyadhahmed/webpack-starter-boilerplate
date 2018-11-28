@@ -1,43 +1,48 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const htmlWebpackPlugin = new HtmlWebpackPlugin({
-    template: "./src/index.html",
-});
-
-const miniCssExtractPlugin = new MiniCssExtractPlugin({
-    filename: "[name].css",
-    chunkFilename: "[id].css"
-})
+const htmlWebpackPlugin = new HtmlWebpackPlugin({template: "./src/index.html"});
+const miniCssExtractPlugin = new MiniCssExtractPlugin({filename: "[name].css", chunkFilename: "[id].css"})
+const cleanWebpackPlugin = new CleanWebpackPlugin(['dist'])
 
 module.exports = {
-    entry: './src/index.js',
+    entry: {
+        index: './src/index.js',
+        vendor: ['jquery', 'bootstrap']
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js'
+        filename: '[name].js'
     },
+    optimization: {
+        usedExports: true,
+        splitChunks: {
+            chunks: 'all'
+        }
+    }, 
     module: {
         rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
+                    loader: 'babel-loader'
                 }
-            },
-            {
+            }, {
                 test: /\.css$/,
                 use: [
                     {
-                        loader: MiniCssExtractPlugin.loader,
-                    },
-                    {
-                        // Interprets `@import` and `url()` like `import/require()` and will resolve them
+                        loader: MiniCssExtractPlugin.loader
+                    }, {
+                        // Interprets `@import` and `url()` like `import/require()` and will resolve
+                        // them
                         loader: 'css-loader'
-                    }]
-            },
-            {
+                    }
+                ]
+            }, {
                 test: /\.(scss)$/,
                 use: [
                     {
@@ -45,19 +50,15 @@ module.exports = {
                         loader: 'postcss-loader',
                         options: {
                             plugins: function () {
-                                return [
-                                    require('autoprefixer')
-                                ];
+                                return [require('autoprefixer')];
                             }
                         }
-                    },
-                    {
+                    }, {
                         // Loads a SASS/SCSS file and compiles it to CSS
                         loader: 'sass-loader'
                     }
                 ]
-            },
-            {
+            }, {
                 test: /\.(png|jpg|gif)$/,
                 use: [
                     {
@@ -68,8 +69,5 @@ module.exports = {
 
         ]
     },
-    plugins: [
-        htmlWebpackPlugin,
-        miniCssExtractPlugin
-    ]
+    plugins: [htmlWebpackPlugin, miniCssExtractPlugin, cleanWebpackPlugin, new webpack.HotModuleReplacementPlugin()]
 };
